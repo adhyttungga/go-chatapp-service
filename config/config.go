@@ -14,10 +14,8 @@ type Origin struct {
 	AllowOrigin string `env:"ALLOW_ORIGIN"`
 }
 
-type name struct {
-}
-
 type ServerConfig struct {
+	GinMode     string `env:"GIN_MODE" default:"debug"`
 	ServiceHost string `env:"SERVICE_HOST" default:"localhost"`
 	ServicePort string `env:"SERVICE_PORT" default:"5000"`
 	DB          Database
