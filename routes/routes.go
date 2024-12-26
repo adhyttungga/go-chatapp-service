@@ -21,7 +21,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func NewRouter(DB *mongo.Database, validate *validator.Validate) *gin.Engine {
+func NewRouter(DB *mongo.Database) *gin.Engine {
 	router := gin.Default()
 	allowOrigins := strings.Split(config.Config.Origin.AllowOrigin, ",")
 
@@ -33,6 +33,9 @@ func NewRouter(DB *mongo.Database, validate *validator.Validate) *gin.Engine {
 		MaxAge:           12 * time.Hour,
 		AllowCredentials: true,
 	}))
+
+	// Add validator
+	validate := validator.New()
 
 	authRepository := auth_repository.NewAuthRepository(DB)
 	authUsecase := auth_usecase.NewAuthUsecase(authRepository)
