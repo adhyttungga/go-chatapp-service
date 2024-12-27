@@ -16,7 +16,7 @@ func ProtectRoute() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token, err := c.Cookie("jwt")
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, dto.ResError{Error: err.Error()})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, dto.ResError{Error: "Token invalid"})
 			return
 		}
 
@@ -38,7 +38,7 @@ func ProtectRoute() gin.HandlerFunc {
 		if err != nil {
 			msg := fmt.Sprintf("An error occurred while parsing token: %s", err.Error())
 			log.Printf("Error in protect route middleware (%s)", msg)
-			c.AbortWithStatusJSON(http.StatusInternalServerError, dto.ResError{Error: msg})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, dto.ResError{Error: "Token invalid"})
 			return
 		}
 
@@ -47,7 +47,7 @@ func ProtectRoute() gin.HandlerFunc {
 			err := errors.New("Validate invalid")
 			msg := fmt.Sprintf("An error occurred while validating: %s", err.Error())
 			log.Printf("Error in protect route middleware (%s)", msg)
-			c.AbortWithStatusJSON(http.StatusInternalServerError, dto.ResError{Error: msg})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, dto.ResError{Error: "Token invalid"})
 			return
 		}
 
