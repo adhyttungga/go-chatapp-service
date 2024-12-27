@@ -25,9 +25,7 @@ func main() {
 	defer connection.Disconnect(ctx)
 
 	router := routes.NewRouter(connection.Database("chatapp"))
-	// if err := router.Run(":" + config.Config.ServicePort); err != nil {
-	// 	log.Fatalf("Listen: %s\n", err)
-	// }
+
 	server := &http.Server{
 		Addr:    ":" + config.Config.ServicePort,
 		Handler: router,

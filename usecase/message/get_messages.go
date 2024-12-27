@@ -23,7 +23,7 @@ func (usecase *MessageUsecaseImpl) GetMessages(c context.Context, req dto.ReqMes
 		return []dto.ResMessage{}, err
 	}
 
-	var messages []dto.ResMessage
+	messages := []dto.ResMessage{}
 	for _, r := range res {
 		messages = append(messages, dto.ResMessage{
 			ID:         r.ID.Hex(),

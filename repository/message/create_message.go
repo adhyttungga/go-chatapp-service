@@ -10,27 +10,28 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (repository *MessageRepositoryImpl) CreateMessage(c context.Context, payload *entity.Message) (resID primitive.ObjectID, err error) {
+func (repository *MessageRepositoryImpl) CreateMessage(c context.Context, message *entity.Message) error {
 	if c.Err() == context.DeadlineExceeded {
-		msg := fmt.Sprintf("An error occured while retrieving an existing conversation: %s", c.Err().Error())
+		msg := fmt.Sprintf("An error occured while creating message: %s", c.Err().Error())
 		log.Printf("Error in repository.MessageRepository.CreateMessage (%s)", msg)
-		return
+		return c.Err()
 	}
 
-	response, err := repository.DB.Collection("messages").InsertOne(c, payload)
+	result, err := repository.DB.Collection("messages").InsertOne(c, message)
 	if err != nil {
 		msg := fmt.Sprintf("An error occured while creating message: %s", err.Error())
 		log.Printf("Error in repository.MessageRepository.CreateMessage (%s)", msg)
-		return resID, err
+		return err
 	}
 
-	responseID, ok := response.InsertedID.(primitive.ObjectID)
+	messageID, ok := result.InsertedID.(primitive.ObjectID)
 	if !ok {
-		err := errors.New("Cannot retrieve response ID")
-		msg := fmt.Sprintf("An error occurred while retrieving response ID %s", err.Error())
-		log.Printf("Error in repository.MessageRepository.CreateConversation (%s)", msg)
-		return resID, err
+		err := errors.New("Cannot retrieve message ID")
+		msg := fmt.Sprintf("An error occurred while retrieving message ID %s", err.Error())
+		log.Printf("Error in repository.MessageRepository.CreateMessage (%s)", msg)
+		return err
 	}
 
-	return responseID, nil
+	message.ID = messageID
+	return nil
 }

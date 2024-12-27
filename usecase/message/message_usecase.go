@@ -7,6 +7,6 @@ import (
 )
 
 type MessageUsecase interface {
-	SendMessage(c context.Context, req dto.ReqMessage) (dto.ResMessage, error)
+	SendMessage(c context.Context, req dto.ReqMessage) (dto.ResMessage, int, error)
 	GetMessages(c context.Context, req dto.ReqMessage) ([]dto.ResMessage, error)
 }

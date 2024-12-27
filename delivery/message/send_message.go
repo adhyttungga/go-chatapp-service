@@ -10,13 +10,13 @@ import (
 )
 
 func (delivery *MessageDeliveryImpl) SendMessage(c *gin.Context) {
-	var req dto.ReqMessage
+	var message dto.ReqMessage
 	senderID, _ := c.Get("user_id")
-	req.SenderID = senderID.(string)
-	req.ReceiverID = c.Param("id")
+	message.SenderID = senderID.(string)
+	message.ReceiverID = c.Param("id")
 
 	// Parse json request
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err := c.ShouldBindJSON(&message); err != nil {
 		// Return internal server error and the message error
 		msg := fmt.Sprintf("An error occurred while parsing json request: %s", err.Error())
 		log.Printf("Error in delivery.MessageDelivery.SendMessage (%s)", msg) // Print error message to log
@@ -24,21 +24,14 @@ func (delivery *MessageDeliveryImpl) SendMessage(c *gin.Context) {
 		return
 	}
 
-	// Validate the request
-	if err := delivery.Validate.Struct(req); err != nil {
-		// Return bad request and the message error
-		c.String(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	resMessage, err := delivery.MessageUsecase.SendMessage(c.Request.Context(), req)
+	resMessage, httpCode, err := delivery.MessageUsecase.SendMessage(c.Request.Context(), message)
 	if err != nil {
 		// Return internal server error and the message error
 		msg := fmt.Sprintf("An error occurred while sending message: %s", err.Error())
 		log.Printf("Error in delivery.MessageDelivery.SendMessage (%s)", msg) // Print error message to log
-		c.String(http.StatusInternalServerError, msg)
+		c.String(httpCode, msg)
 		return
 	}
 
-	c.JSON(http.StatusCreated, resMessage)
+	c.JSON(httpCode, resMessage)
 }

@@ -9,7 +9,6 @@ import (
 	message_delivery "github.com/adhyttungga/go-chatapp-service/delivery/message"
 	user_delivery "github.com/adhyttungga/go-chatapp-service/delivery/user"
 	"github.com/adhyttungga/go-chatapp-service/middleware"
-	auth_repository "github.com/adhyttungga/go-chatapp-service/repository/auth"
 	message_repository "github.com/adhyttungga/go-chatapp-service/repository/message"
 	user_repository "github.com/adhyttungga/go-chatapp-service/repository/user"
 	auth_usecase "github.com/adhyttungga/go-chatapp-service/usecase/auth"
@@ -37,16 +36,18 @@ func NewRouter(DB *mongo.Database) *gin.Engine {
 	// Add validator
 	validate := validator.New()
 
-	authRepository := auth_repository.NewAuthRepository(DB)
-	authUsecase := auth_usecase.NewAuthUsecase(authRepository)
-	authDelivery := auth_delivery.NewAuthDelivery(authUsecase, validate)
-
-	messageRepository := message_repository.NewMessageRepository(DB)
-	messageUsecase := message_usecase.NewMessageUsecase(messageRepository)
-	messageDelivery := message_delivery.NewMessageDelivery(messageUsecase, validate)
-
+	// Repository
 	userRepository := user_repository.NewUserRepository(DB)
+	messageRepository := message_repository.NewMessageRepository(DB)
+
+	// Usecase
+	authUsecase := auth_usecase.NewAuthUsecase(userRepository, validate)
+	messageUsecase := message_usecase.NewMessageUsecase(messageRepository, validate)
 	userUsecase := user_usecase.NewUserUsecase(userRepository)
+
+	// Delivery
+	authDelivery := auth_delivery.NewAuthDelivery(authUsecase)
+	messageDelivery := message_delivery.NewMessageDelivery(messageUsecase)
 	userDelivery := user_delivery.NewUserDelivery(userUsecase)
 
 	authRoutes := router.Group("/api/auth")
@@ -62,7 +63,7 @@ func NewRouter(DB *mongo.Database) *gin.Engine {
 	}
 	userRoutes := router.Group("/api/user").Use(middleware.ProtectRoute())
 	{
-		userRoutes.GET("/", userDelivery.GetUser)
+		userRoutes.GET("/", userDelivery.FindAllExcludeId)
 	}
 
 	return router

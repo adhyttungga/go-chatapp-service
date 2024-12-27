@@ -1,15 +1,21 @@
 package auth_usecase
 
 import (
-	auth_repository "github.com/adhyttungga/go-chatapp-service/repository/auth"
+	user_repository "github.com/adhyttungga/go-chatapp-service/repository/user"
+	"github.com/go-playground/validator/v10"
 )
 
 type AuthUsecaseImpl struct {
-	AuthRepository auth_repository.AuthRepository
+	UserRepository user_repository.UserRepository
+	Validate       *validator.Validate
 }
 
-func NewAuthUsecase(authRepository auth_repository.AuthRepository) AuthUsecase {
+func NewAuthUsecase(
+	userRepository user_repository.UserRepository,
+	validate *validator.Validate,
+) AuthUsecase {
 	return &AuthUsecaseImpl{
-		AuthRepository: authRepository,
+		UserRepository: userRepository,
+		Validate:       validate,
 	}
 }

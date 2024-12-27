@@ -10,10 +10,10 @@ import (
 )
 
 func (delivery *AuthDeliveryImpl) Login(c *gin.Context) {
-	var req dto.ReqLogin
+	var login dto.ReqLogin
 
 	// Parse json request
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err := c.ShouldBindJSON(&login); err != nil {
 		// Return internal server error and the message error
 		msg := fmt.Sprintf("An error occurred while parsing json request: %s", err.Error())
 		log.Printf("Error in delivery.AuthDelivery.Login (%s)", msg) // Print error message to log
@@ -21,14 +21,7 @@ func (delivery *AuthDeliveryImpl) Login(c *gin.Context) {
 		return
 	}
 
-	// Validate the request
-	if err := delivery.Validate.Struct(req); err != nil {
-		// Return bad request and the message error
-		c.String(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	httpCode, res, jwtToken, err := delivery.AuthUsecase.Login(c.Request.Context(), req)
+	httpCode, user, jwtToken, err := delivery.AuthUsecase.Login(c.Request.Context(), login)
 	if err != nil {
 		msg := fmt.Sprintf("An error occurred while retrieving user: %s", err.Error())
 		log.Printf("Error in delivery.AuthDelivery.Login (%s)", msg)
@@ -37,5 +30,5 @@ func (delivery *AuthDeliveryImpl) Login(c *gin.Context) {
 	}
 
 	c.SetCookie("jwt", jwtToken, (15 * 24 * 60 * 60), "/", "", false, true)
-	c.JSON(http.StatusOK, res)
+	c.JSON(http.StatusOK, user)
 }
