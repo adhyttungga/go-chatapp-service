@@ -1,0 +1,433 @@
+{
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "A chatapp service API in Go Using Gin framework.\nThis API is used to manage authentication, messages, and users.",
+        "title": "Chatapp Service API",
+        "contact": {},
+        "version": "1.0.0"
+    },
+    "host": "localhost:5000",
+    "basePath": "/api",
+    "paths": {
+        "/auth/login": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Login endpoint.",
+                "parameters": [
+                    {
+                        "description": "Request body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ReqLogin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResUser"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResError"
+                        }
+                    },
+                    "default": {
+                        "description": "Other error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResError"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Logout endpoint.",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResLogout"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/signup": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "SignUp endpoint.",
+                "parameters": [
+                    {
+                        "description": "Request body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ReqSignup"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResUser"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResError"
+                        }
+                    },
+                    "default": {
+                        "description": "Other error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResError"
+                        }
+                    }
+                }
+            }
+        },
+        "/message/send/{id}": {
+            "post": {
+                "description": "Send messages from logged in user to other user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "message"
+                ],
+                "summary": "Send message endpoint.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Request body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ReqMessage"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResError"
+                        }
+                    },
+                    "default": {
+                        "description": "Other error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResError"
+                        }
+                    }
+                }
+            }
+        },
+        "/message/{id}": {
+            "get": {
+                "description": "List messages from logged in user with other user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "message"
+                ],
+                "summary": "Get message endpoint.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.ResMessage"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResError"
+                        }
+                    },
+                    "default": {
+                        "description": "Other error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResError"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/": {
+            "get": {
+                "description": "Displays all users except the currently logged in user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Find all user exclude logged in user endpoint.",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.ResUser"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResError"
+                        }
+                    },
+                    "default": {
+                        "description": "Other error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.ReqLogin": {
+            "type": "object",
+            "required": [
+                "password",
+                "userName"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ReqMessage": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "receiverId": {
+                    "type": "string"
+                },
+                "senderId": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ReqSignup": {
+            "type": "object",
+            "required": [
+                "confirmPassword",
+                "fullName",
+                "gender",
+                "password",
+                "userName"
+            ],
+            "properties": {
+                "confirmPassword": {
+                    "type": "string",
+                    "minLength": 6
+                },
+                "fullName": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string",
+                    "enum": [
+                        "male",
+                        "female"
+                    ]
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ResError": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ResLogout": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ResMessage": {
+            "type": "object",
+            "properties": {
+                "_id": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "receiverId": {
+                    "type": "string"
+                },
+                "senderId": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ResUser": {
+            "type": "object",
+            "properties": {
+                "_id": {
+                    "type": "string"
+                },
+                "fullName": {
+                    "type": "string"
+                },
+                "profilePic": {
+                    "type": "string"
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "description": "Endpoints related to authentication.",
+            "name": "auth"
+        },
+        {
+            "description": "Endpoints related to message.",
+            "name": "message"
+        },
+        {
+            "description": "Endpoints related to user.",
+            "name": "user"
+        }
+    ],
+    "externalDocs": {
+        "description": "OpenAPI",
+        "url": "http://localhost:5000/docs/index.html"
+    }
+}

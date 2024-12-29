@@ -10,9 +10,31 @@ import (
 	"time"
 
 	"github.com/adhyttungga/go-chatapp-service/config"
+	_ "github.com/adhyttungga/go-chatapp-service/docs"
 	"github.com/adhyttungga/go-chatapp-service/routes"
 )
 
+// @title Chatapp Service API
+// @version 1.0.0
+// @description A chatapp service API in Go Using Gin framework.
+// @description This API is used to manage authentication, messages, and users.
+
+// @host localhost:5000
+// @BasePath /api
+
+// @tag.name auth
+// @tag.description Endpoints related to authentication.
+
+// @tag.name message
+// @tag.description Endpoints related to message.
+
+// @tag.name user
+// @tag.description Endpoints related to user.
+
+// @schemes http https
+
+// @externalDocs.description  OpenAPI
+// @externalDocs.url          http://localhost:5000/docs/index.html
 func main() {
 	os.Setenv("TZ", "Asia/Jakarta")
 	log.Println("Server initialized...")

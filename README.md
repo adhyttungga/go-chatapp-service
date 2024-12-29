@@ -1,6 +1,6 @@
 # GO-CHATAPP-SERVICE
 
-###### version: v1.0
+###### version: v1.0.0
 
 ###### Last Update: 2024-12-26
 

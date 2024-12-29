@@ -1,0 +1,286 @@
+basePath: /api
+definitions:
+  dto.ReqLogin:
+    properties:
+      password:
+        minLength: 6
+        type: string
+      userName:
+        type: string
+    required:
+    - password
+    - userName
+    type: object
+  dto.ReqMessage:
+    properties:
+      message:
+        type: string
+      receiverId:
+        type: string
+      senderId:
+        type: string
+    required:
+    - message
+    type: object
+  dto.ReqSignup:
+    properties:
+      confirmPassword:
+        minLength: 6
+        type: string
+      fullName:
+        type: string
+      gender:
+        enum:
+        - male
+        - female
+        type: string
+      password:
+        minLength: 6
+        type: string
+      userName:
+        type: string
+    required:
+    - confirmPassword
+    - fullName
+    - gender
+    - password
+    - userName
+    type: object
+  dto.ResError:
+    properties:
+      error:
+        type: string
+    type: object
+  dto.ResLogout:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.ResMessage:
+    properties:
+      _id:
+        type: string
+      message:
+        type: string
+      receiverId:
+        type: string
+      senderId:
+        type: string
+    type: object
+  dto.ResUser:
+    properties:
+      _id:
+        type: string
+      fullName:
+        type: string
+      profilePic:
+        type: string
+      userName:
+        type: string
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: http://localhost:5000/docs/index.html
+host: localhost:5000
+info:
+  contact: {}
+  description: |-
+    A chatapp service API in Go Using Gin framework.
+    This API is used to manage authentication, messages, and users.
+  title: Chatapp Service API
+  version: 1.0.0
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ReqLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            $ref: '#/definitions/dto.ResUser'
+        "400":
+          description: Bad request error
+          schema:
+            $ref: '#/definitions/dto.ResError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ResError'
+        default:
+          description: Other error
+          schema:
+            $ref: '#/definitions/dto.ResError'
+      summary: Login endpoint.
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      responses:
+        "200":
+          description: Ok
+          schema:
+            $ref: '#/definitions/dto.ResLogout'
+      summary: Logout endpoint.
+      tags:
+      - auth
+  /auth/signup:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ReqSignup'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ResUser'
+        "400":
+          description: Bad request error
+          schema:
+            $ref: '#/definitions/dto.ResError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ResError'
+        default:
+          description: Other error
+          schema:
+            $ref: '#/definitions/dto.ResError'
+      summary: SignUp endpoint.
+      tags:
+      - auth
+  /message/{id}:
+    get:
+      consumes:
+      - application/json
+      description: List messages from logged in user with other user.
+      parameters:
+      - description: Id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            items:
+              $ref: '#/definitions/dto.ResMessage'
+            type: array
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/dto.ResError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ResError'
+        default:
+          description: Other error
+          schema:
+            $ref: '#/definitions/dto.ResError'
+      summary: Get message endpoint.
+      tags:
+      - message
+  /message/send/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Send messages from logged in user to other user.
+      parameters:
+      - description: Id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ReqMessage'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ResMessage'
+        "400":
+          description: Bad request error
+          schema:
+            $ref: '#/definitions/dto.ResError'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/dto.ResError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ResError'
+        default:
+          description: Other error
+          schema:
+            $ref: '#/definitions/dto.ResError'
+      summary: Send message endpoint.
+      tags:
+      - message
+  /user/:
+    get:
+      consumes:
+      - application/json
+      description: Displays all users except the currently logged in user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            items:
+              $ref: '#/definitions/dto.ResUser'
+            type: array
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/dto.ResError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ResError'
+        default:
+          description: Other error
+          schema:
+            $ref: '#/definitions/dto.ResError'
+      summary: Find all user exclude logged in user endpoint.
+      tags:
+      - user
+schemes:
+- http
+- https
+swagger: "2.0"
+tags:
+- description: Endpoints related to authentication.
+  name: auth
+- description: Endpoints related to message.
+  name: message
+- description: Endpoints related to user.
+  name: user

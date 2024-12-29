@@ -13,10 +13,12 @@ import (
 )
 
 func (usecase *MessageUsecaseImpl) SendMessage(c context.Context, req dto.ReqMessage) (dto.ResMessage, int, error) {
+	emptyMessage := dto.ResMessage{}
+
 	// Validate the request
 	if err := usecase.Validate.Struct(req); err != nil {
 		// Return bad request and the message error
-		return dto.ResMessage{}, http.StatusBadRequest, err
+		return emptyMessage, http.StatusBadRequest, err
 	}
 
 	senderID, _ := primitive.ObjectIDFromHex(req.SenderID)
@@ -34,12 +36,12 @@ func (usecase *MessageUsecaseImpl) SendMessage(c context.Context, req dto.ReqMes
 			// Print error message to log unless the error is "no document"
 			msg := fmt.Sprintf("An error occured while retrieving an existing conversation: %s", err.Error())
 			log.Printf("Error in message_usecase.MessageUsecase.SendMessage (%s)", msg)
-			return dto.ResMessage{}, http.StatusInternalServerError, err
+			return emptyMessage, http.StatusInternalServerError, err
 		} else { // Create new conversation if there is no an existing conversation
 			if err := usecase.MessageRepository.CreateConversation(c, &conversation); err != nil {
 				msg := fmt.Sprintf("An error occured while creating conversation: %s", err.Error())
 				log.Printf("Error in message_usecase.MessageUsecase.SendMessage (%s)", msg)
-				return dto.ResMessage{}, http.StatusInternalServerError, err
+				return emptyMessage, http.StatusInternalServerError, err
 			}
 		}
 	}
@@ -48,7 +50,7 @@ func (usecase *MessageUsecaseImpl) SendMessage(c context.Context, req dto.ReqMes
 	if err := usecase.MessageRepository.CreateMessage(c, &newMessage); err != nil {
 		msg := fmt.Sprintf("An error occured while creating message: %s", err.Error())
 		log.Printf("Error in message_usecase.MessageUsecase.SendMessage (%s)", msg)
-		return dto.ResMessage{}, http.StatusInternalServerError, err
+		return emptyMessage, http.StatusInternalServerError, err
 	}
 
 	// Update conversation
@@ -56,7 +58,7 @@ func (usecase *MessageUsecaseImpl) SendMessage(c context.Context, req dto.ReqMes
 	if err := usecase.MessageRepository.UpdateConversation(c, &conversation); err != nil {
 		msg := fmt.Sprintf("An error occured while updating conversation: %s", err.Error())
 		log.Printf("Error in message_usecase.MessageUsecase.SendMessage (%s)", msg)
-		return dto.ResMessage{}, http.StatusInternalServerError, err
+		return emptyMessage, http.StatusInternalServerError, err
 	}
 
 	resMessage := dto.ResMessage{

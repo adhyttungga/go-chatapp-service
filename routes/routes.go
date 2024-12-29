@@ -17,6 +17,8 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -50,6 +52,10 @@ func NewRouter(DB *mongo.Database) *gin.Engine {
 	messageDelivery := message_delivery.NewMessageDelivery(messageUsecase)
 	userDelivery := user_delivery.NewUserDelivery(userUsecase)
 
+	// Swagger Router
+	if config.Config.GinMode == "debug" {
+		router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.DefaultModelsExpandDepth(-1)))
+	}
 	authRoutes := router.Group("/api/auth")
 	{
 		authRoutes.POST("/signup", authDelivery.Signup)
